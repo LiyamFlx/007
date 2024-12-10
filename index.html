@@ -1,191 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Engagement Sentiments Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 1em;
-            text-align: center;
-        }
-
-        main {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        footer {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
-            padding: 1em;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-
-        canvas {
-            margin: 20px;
-            max-width: 700px;
-            width: 100%;
-            height: auto;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Engagement Sentiment Score equips customer-facing teams to deliver tailored insights at the right moment, perfectly aligned with each customer's sentiment.">
+  <title>Engagement Sentiment Score</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    header {
+      background-color: #343a40;
+      color: white;
+      padding: 10px 20px;
+    }
+    header nav a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+    header nav a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      margin-top: 20px;
+    }
+    .chart-container {
+      max-width: 800px;
+      margin: 20px auto;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Customer Engagement Sentiments Dashboard</h1>
-    </header>
-    <main>
-        <section>
-            <h2>Funnel Chart</h2>
-            <canvas id="funnelChart"></canvas>
-        </section>
-        <section>
-            <h2>Sentiment Trends</h2>
-            <canvas id="sentimentTrendChart"></canvas>
-        </section>
-        <section>
-            <h2>Sentiment Heatmap</h2>
-            <canvas id="heatmapChart"></canvas>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 Customer Engagement Project. All rights reserved.</p>
-    </footer>
+  <!-- Header -->
+  <header>
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>Engagement Sentiment Score</h1>
+      <nav>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#analytics">Analytics</a>
+        <a href="#support">Support</a>
+      </nav>
+    </div>
+  </header>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Mock Data
-            const data = {
-                funnel: {
-                    stages: ["Awareness", "Interest", "Consideration", "Purchase", "Post-Purchase"],
-                    values: [1000, 700, 500, 300, 200]
-                },
-                sentimentTrends: {
-                    stages: ["Awareness", "Interest", "Consideration", "Purchase", "Post-Purchase"],
-                    sentiments: [
-                        { name: 'Curiosity', values: [70, 75, 80, 85, 90], color: 'blue' },
-                        { name: 'Suspicion', values: [40, 35, 30, 25, 20], color: 'red' },
-                        { name: 'Hope', values: [60, 65, 70, 75, 80], color: 'green' },
-                        { name: 'Excitement', values: [50, 60, 70, 80, 85], color: 'orange' },
-                        { name: 'Anxiety', values: [50, 45, 40, 35, 30], color: 'purple' }
-                    ]
-                },
-                heatmap: {
-                    labels: ["Curiosity", "Suspicion", "Hope", "Excitement", "Anxiety"],
-                    rows: ["New Customers", "Returning Customers", "VIP Customers"],
-                    values: [
-                        [75, 60, 80, 70, 40],
-                        [85, 50, 90, 80, 30],
-                        [90, 40, 95, 85, 20]
-                    ]
-                }
-            };
+  <!-- Authentication Section -->
+  <section id="auth" class="container mt-5">
+    <h2>User Authentication</h2>
+    <form>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter your email">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Enter your password">
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="button" class="btn btn-secondary">Sign Up</button>
+    </form>
+  </section>
 
-            renderFunnelChart(data.funnel);
-            renderSentimentTrendChart(data.sentimentTrends);
-            renderHeatmapChart(data.heatmap);
-        });
+  <!-- Engagement Dashboard -->
+  <section id="dashboard" class="container mt-5">
+    <h2>Engagement Dashboard</h2>
+    <div class="chart-container">
+      <canvas id="engagementChart"></canvas>
+    </div>
+  </section>
 
-        function renderFunnelChart(data) {
-            const ctx = document.getElementById('funnelChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.stages,
-                    datasets: [{
-                        label: 'Leads',
-                        data: data.values,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: "Customer Journey Funnel"
-                        }
-                    }
-                }
-            });
+  <!-- Analytics and Reporting -->
+  <section id="analytics" class="container mt-5">
+    <h2>Analytics and Reporting</h2>
+    <div class="chart-container">
+      <canvas id="analyticsChart"></canvas>
+    </div>
+    <button class="btn btn-success mt-3">Export Report</button>
+  </section>
+
+  <!-- Feedback and Support -->
+  <section id="support" class="container mt-5">
+    <h2>Feedback and Support</h2>
+    <form>
+      <div class="mb-3">
+        <label for="feedback" class="form-label">Your Feedback</label>
+        <textarea class="form-control" id="feedback" rows="3" placeholder="Share your thoughts..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+    <h3 class="mt-5">FAQs</h3>
+    <p><strong>Q: How does the Engagement Sentiment Score work?</strong><br>A: It analyzes customer sentiment in real-time to provide actionable insights.</p>
+    <p><strong>Q: Can I export the data?</strong><br>A: Yes, you can export the analysis as a CSV or PDF file.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Engagement Sentiment Score. All rights reserved.</p>
+    <p>Follow us on <a href="#" class="text-white">Twitter</a>, <a href="#" class="text-white">LinkedIn</a>, and <a href="#" class="text-white">Facebook</a>.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Chart for Engagement Dashboard
+    const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+    const engagementChart = new Chart(engagementCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Physical', 'Emotional', 'Mental', 'Spiritual'],
+        datasets: [{
+          label: 'Engagement Levels (%)',
+          data: [75, 85, 90, 60],
+          backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745']
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
         }
+      }
+    });
 
-        function renderSentimentTrendChart(data) {
-            const ctx = document.getElementById('sentimentTrendChart').getContext('2d');
-            const datasets = data.sentiments.map(sentiment => ({
-                label: sentiment.name,
-                data: sentiment.values,
-                borderColor: sentiment.color,
-                borderWidth: 2
-            }));
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.stages,
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: "Sentiment Trends Across Customer Journey"
-                        }
-                    }
-                }
-            });
+    // Chart for Analytics
+    const analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
+    const analyticsChart = new Chart(analyticsCtx, {
+      type: 'line',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [{
+          label: 'Customer Sentiment Over Time',
+          data: [70, 75, 80, 85],
+          borderColor: '#007bff',
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
         }
-
-        function renderHeatmapChart(data) {
-            const ctx = document.getElementById('heatmapChart').getContext('2d');
-            const heatmapData = {
-                labels: data.labels,
-                datasets: data.rows.map((row, i) => ({
-                    label: row,
-                    data: data.values[i],
-                    backgroundColor: `rgba(${(i + 1) * 50}, ${(i + 1) * 80}, 200, 0.6)`
-                }))
-            };
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: heatmapData.labels,
-                    datasets: heatmapData.datasets
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: "Sentiment Heatmap by Segment"
-                        }
-                    },
-                    scales: {
-                        x: { stacked: true },
-                        y: { stacked: true }
-                    }
-                }
-            });
-        }
-    </script>
+      }
+    });
+  </script>
 </body>
 </html>
