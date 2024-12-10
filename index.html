@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Engagement Sentiments Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        footer {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        canvas {
+            margin: 20px;
+            max-width: 700px;
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Customer Engagement Sentiments Dashboard</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Funnel Chart</h2>
+            <canvas id="funnelChart"></canvas>
+        </section>
+        <section>
+            <h2>Sentiment Trends</h2>
+            <canvas id="sentimentTrendChart"></canvas>
+        </section>
+        <section>
+            <h2>Sentiment Heatmap</h2>
+            <canvas id="heatmapChart"></canvas>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Customer Engagement Project. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mock Data
+            const data = {
+                funnel: {
+                    stages: ["Awareness", "Interest", "Consideration", "Purchase", "Post-Purchase"],
+                    values: [1000, 700, 500, 300, 200]
+                },
+                sentimentTrends: {
+                    stages: ["Awareness", "Interest", "Consideration", "Purchase", "Post-Purchase"],
+                    sentiments: [
+                        { name: 'Curiosity', values: [70, 75, 80, 85, 90], color: 'blue' },
+                        { name: 'Suspicion', values: [40, 35, 30, 25, 20], color: 'red' },
+                        { name: 'Hope', values: [60, 65, 70, 75, 80], color: 'green' },
+                        { name: 'Excitement', values: [50, 60, 70, 80, 85], color: 'orange' },
+                        { name: 'Anxiety', values: [50, 45, 40, 35, 30], color: 'purple' }
+                    ]
+                },
+                heatmap: {
+                    labels: ["Curiosity", "Suspicion", "Hope", "Excitement", "Anxiety"],
+                    rows: ["New Customers", "Returning Customers", "VIP Customers"],
+                    values: [
+                        [75, 60, 80, 70, 40],
+                        [85, 50, 90, 80, 30],
+                        [90, 40, 95, 85, 20]
+                    ]
+                }
+            };
+
+            renderFunnelChart(data.funnel);
+            renderSentimentTrendChart(data.sentimentTrends);
+            renderHeatmapChart(data.heatmap);
+        });
+
+        function renderFunnelChart(data) {
+            const ctx = document.getElementById('funnelChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.stages,
+                    datasets: [{
+                        label: 'Leads',
+                        data: data.values,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Customer Journey Funnel"
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSentimentTrendChart(data) {
+            const ctx = document.getElementById('sentimentTrendChart').getContext('2d');
+            const datasets = data.sentiments.map(sentiment => ({
+                label: sentiment.name,
+                data: sentiment.values,
+                borderColor: sentiment.color,
+                borderWidth: 2
+            }));
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.stages,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Sentiment Trends Across Customer Journey"
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderHeatmapChart(data) {
+            const ctx = document.getElementById('heatmapChart').getContext('2d');
+            const heatmapData = {
+                labels: data.labels,
+                datasets: data.rows.map((row, i) => ({
+                    label: row,
+                    data: data.values[i],
+                    backgroundColor: `rgba(${(i + 1) * 50}, ${(i + 1) * 80}, 200, 0.6)`
+                }))
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: heatmapData.labels,
+                    datasets: heatmapData.datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Sentiment Heatmap by Segment"
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
