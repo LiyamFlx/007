@@ -3,233 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="EngageSense - Redefining Audience Engagement Analysis">
-    <title>EngageSense - Real-Time Engagement Insights</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>EngageSense Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Global Styles */
-        :root {
-            --primary-color: #6200ea;
-            --secondary-color: #3700b3;
-            --accent-color: #03dac6;
-            --background-color: #f5f5f5;
-            --text-color: #333;
-            --card-bg: #fff;
-            --border-radius: 10px;
-        }
-
+        /* Critical Styles */
         body {
+            background-color: #121212;
+            color: #e0e0e0;
             font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
         }
 
-        header {
-            background: var(--primary-color);
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .scrollbar::-webkit-scrollbar {
+            width: 8px;
         }
 
-        header h1 {
-            font-size: 2rem;
-            margin: 0;
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
         }
 
-        header p {
-            margin: 5px 0 0;
-            font-size: 1rem;
+        .highlight {
+            color: #3b82f6;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
+        /* Responsive Cards */
+        .dashboard-card {
+            transition: transform 0.3s;
         }
 
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            background: var(--primary-color);
-            color: #fff;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-            text-transform: uppercase;
-        }
-
-        .button:hover {
-            background: var(--secondary-color);
-        }
-
-        .progress-bar {
-            margin-top: 20px;
-            position: relative;
-            height: 30px;
-            width: 100%;
-            background: #e0e0e0;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-        }
-
-        .progress-bar span {
-            position: absolute;
-            height: 100%;
-            width: 0;
-            background: var(--accent-color);
-            transition: width 1s ease-in-out;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 40px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .card h3 {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            margin: 10px 0;
-        }
-
-        .card p {
-            font-size: 1.2rem;
-            margin: 0;
-        }
-
-        .chart-container {
-            width: 100%;
-            height: 400px;
-            margin-top: 40px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 10px;
-            background: var(--primary-color);
-            color: #fff;
-            margin-top: 40px;
+        .dashboard-card:hover {
+            transform: translateY(-5px);
         }
     </style>
 </head>
-<body>
-    <header>
-        <h1>EngageSense</h1>
-        <p>Real-Time Audience Engagement Analysis</p>
+<body class="min-h-screen flex flex-col p-4 scrollbar">
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-white">EngageSense Dashboard</h1>
+        <p class="text-gray-400">Real-Time Audio Engagement Analytics</p>
     </header>
 
-    <div class="container">
-        <!-- Welcome Section -->
-        <section>
-            <h2>Welcome to EngageSense</h2>
-            <p>Start measuring audience engagement like never before.</p>
-            <button class="button" onclick="startAnalysis()">Start Analysis</button>
-        </section>
+    <main class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Overall Engagement -->
+        <div class="dashboard-card bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl text-white font-semibold">Overall Engagement</h2>
+            <canvas id="overallEngagementChart" class="w-full mt-4"></canvas>
+            <p id="overallEngagementScore" class="text-3xl font-bold text-blue-400 mt-2 text-center">0</p>
+        </div>
 
-        <!-- Progress Bar -->
-        <section id="progressSection" style="display:none;">
-            <h2>Analyzing...</h2>
-            <div class="progress-bar">
-                <span id="progressBar"></span>
-            </div>
-        </section>
+        <!-- Dimensions Chart -->
+        <div class="dashboard-card bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl text-white font-semibold">Engagement Dimensions</h2>
+            <canvas id="engagementDimensionsChart" class="w-full mt-4"></canvas>
+        </div>
 
-        <!-- Metrics Dashboard -->
-        <section id="dashboardSection" style="display:none;">
-            <h2>Engagement Metrics</h2>
-            <div class="dashboard">
-                <div class="card">
-                    <h3>Physical</h3>
-                    <p id="physicalMetric">Loading...</p>
-                </div>
-                <div class="card">
-                    <h3>Emotional</h3>
-                    <p id="emotionalMetric">Loading...</p>
-                </div>
-                <div class="card">
-                    <h3>Mental</h3>
-                    <p id="mentalMetric">Loading...</p>
-                </div>
-                <div class="card">
-                    <h3>Spiritual</h3>
-                    <p id="spiritualMetric">Loading...</p>
-                </div>
-            </div>
-        </section>
+        <!-- Recommendations -->
+        <div class="dashboard-card bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl text-white font-semibold">Recommendations</h2>
+            <ul id="recommendationsContainer" class="mt-4 text-gray-300">
+                <li>Loading recommendations...</li>
+            </ul>
+        </div>
+    </main>
 
-        <!-- Chart Visualization -->
-        <section id="chartSection" style="display:none;">
-            <h2>Engagement Visualization</h2>
-            <div class="chart-container" id="chartContainer">
-                <!-- Chart will be rendered here -->
-            </div>
-        </section>
-    </div>
-
-    <footer>
-        EngageSense &copy; 2024. All Rights Reserved.
+    <footer class="text-center mt-10">
+        <p class="text-gray-500 text-sm">&copy; 2024 EngageSense. All Rights Reserved.</p>
     </footer>
 
     <script>
-        const metrics = {
-            physical: "85%",
-            emotional: "92%",
-            mental: "78%",
-            spiritual: "88%"
+        // Initialization
+        const mockData = {
+            engagementScore: 75,
+            dimensions: [8, 7, 9, 6],
+            recommendations: [
+                "Improve storytelling to enhance emotional engagement.",
+                "Introduce interactive visuals for better mental focus.",
+                "Simplify content to avoid overload."
+            ]
         };
 
-        function startAnalysis() {
-            document.getElementById('progressSection').style.display = 'block';
-            const progressBar = document.getElementById('progressBar');
-            progressBar.style.width = '100%';
+        // Charts
+        const overallCtx = document.getElementById('overallEngagementChart').getContext('2d');
+        const dimensionsCtx = document.getElementById('engagementDimensionsChart').getContext('2d');
 
-            setTimeout(() => {
-                document.getElementById('progressSection').style.display = 'none';
-                document.getElementById('dashboardSection').style.display = 'block';
-                updateMetrics();
-                renderChart();
-            }, 3000);
-        }
+        new Chart(overallCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Engagement', 'Remaining'],
+                datasets: [{
+                    data: [mockData.engagementScore, 100 - mockData.engagementScore],
+                    backgroundColor: ['#3b82f6', '#2d3748']
+                }]
+            },
+            options: {
+                plugins: {
+                    tooltip: { enabled: true }
+                },
+                cutout: '70%'
+            }
+        });
 
-        function updateMetrics() {
-            document.getElementById('physicalMetric').innerText = metrics.physical;
-            document.getElementById('emotionalMetric').innerText = metrics.emotional;
-            document.getElementById('mentalMetric').innerText = metrics.mental;
-            document.getElementById('spiritualMetric').innerText = metrics.spiritual;
-        }
+        new Chart(dimensionsCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Physical', 'Emotional', 'Mental', 'Spiritual'],
+                datasets: [{
+                    data: mockData.dimensions,
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: '#3b82f6',
+                    pointBackgroundColor: '#3b82f6'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        ticks: {
+                            color: '#fff'
+                        }
+                    }
+                }
+            }
+        });
 
-        function renderChart() {
-            document.getElementById('chartSection').style.display = 'block';
-            const container = document.getElementById('chartContainer');
-            container.innerHTML = `
-                <svg viewBox="0 0 42 42" class="donut">
-                    <circle class="donut-hole" cx="21" cy="21" r="15.915" fill="#fff"></circle>
-                    <circle class="donut-ring" cx="21" cy="21" r="15.915" fill="transparent" stroke="#e0e0e0" stroke-width="3"></circle>
-                    <circle class="donut-segment" cx="21" cy="21" r="15.915" fill="transparent" stroke="#6200ea" stroke-width="3" stroke-dasharray="75 25" stroke-dashoffset="25"></circle>
-                    <g class="donut-text" font-size="3" font-family="Arial">
-                        <text x="21" y="21" text-anchor="middle" alignment-baseline="middle" fill="#6200ea">75%</text>
-                    </g>
-                </svg>
-            `;
-        }
+        // Recommendations
+        const recommendationsContainer = document.getElementById('recommendationsContainer');
+        recommendationsContainer.innerHTML = mockData.recommendations.map(rec => `<li>${rec}</li>`).join('');
     </script>
 </body>
 </html>
