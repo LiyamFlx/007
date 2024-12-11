@@ -30,9 +30,9 @@
         <p class="text-gray-400">Analyze real-time audience engagement with AI</p>
     </header>
 
-    <main class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+    <main class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- File Upload & Recording Section -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1 md:col-span-2">
             <h2 class="text-xl text-white font-semibold">Audio Input</h2>
             <p class="text-gray-400 mb-4">Upload an audio file or record in real-time.</p>
             <div class="space-y-4">
@@ -44,20 +44,26 @@
         </div>
 
         <!-- Engagement Levels Visualization -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1">
             <h2 class="text-xl text-white font-semibold">Engagement Levels</h2>
             <canvas id="engagementLevelsChart" class="w-full mt-4"></canvas>
         </div>
 
         <!-- Overall Engagement Visualization -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1">
             <h2 class="text-xl text-white font-semibold">Overall Engagement</h2>
             <canvas id="overallEngagementChart" class="w-full mt-4"></canvas>
             <p id="overallEngagementScore" class="text-3xl font-bold text-blue-400 mt-4 text-center">0</p>
         </div>
 
+        <!-- Engagement Trends Visualization -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1 md:col-span-2">
+            <h2 class="text-xl text-white font-semibold">Engagement Trends</h2>
+            <canvas id="engagementTrendsChart" class="w-full mt-4"></canvas>
+        </div>
+
         <!-- Recommendations -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1">
             <h2 class="text-xl text-white font-semibold">Recommendations</h2>
             <ul id="recommendationsContainer" class="mt-4 text-gray-300">
                 <li>Loading recommendations...</li>
@@ -73,6 +79,7 @@
         // Chart.js Setup
         const engagementLevelsCtx = document.getElementById('engagementLevelsChart').getContext('2d');
         const overallEngagementCtx = document.getElementById('overallEngagementChart').getContext('2d');
+        const engagementTrendsCtx = document.getElementById('engagementTrendsChart').getContext('2d');
 
         const engagementLevelsChart = new Chart(engagementLevelsCtx, {
             type: 'radar',
@@ -111,6 +118,29 @@
                     tooltip: { enabled: true }
                 },
                 cutout: '70%'
+            }
+        });
+
+        const engagementTrendsChart = new Chart(engagementTrendsCtx, {
+            type: 'line',
+            data: {
+                labels: ['0:00', '0:15', '0:30', '0:45', '1:00'], // Mock time intervals
+                datasets: [{
+                    label: 'Engagement Over Time',
+                    data: [50, 55, 53, 57, 60], // Mock data
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)'
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        ticks: { color: '#fff' }
+                    },
+                    y: {
+                        ticks: { color: '#fff' }
+                    }
+                }
             }
         });
 
