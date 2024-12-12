@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EngageSense - Real-Time Engagement Analyzer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <style>
         body {
             background-color: #121212;
@@ -22,166 +22,172 @@
         .highlight {
             color: #3b82f6;
         }
+        button:hover, button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.6);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col p-4 scrollbar">
-    <header class="text-center mb-8">
+    <header class="text-center mb-8" role="banner">
         <h1 class="text-4xl font-bold text-white">EngageSense - Real-Time Analyzer</h1>
         <p class="text-gray-400">Analyze real-time audience engagement with AI</p>
     </header>
 
-    <main class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <main class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="main">
         <!-- File Upload & Recording Section -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1 md:col-span-2">
-            <h2 class="text-xl text-white font-semibold">Audio Input</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1 md:col-span-2" aria-labelledby="audioInputTitle">
+            <h2 id="audioInputTitle" class="text-xl text-white font-semibold">Audio Input</h2>
             <p class="text-gray-400 mb-4">Upload an audio file or record in real-time.</p>
             <div class="space-y-4">
-                <input type="file" id="audioUpload" accept="audio/*" class="block w-full text-gray-300 bg-gray-700 p-2 rounded-lg" />
+                <input type="file" id="audioUpload" accept="audio/*" class="block w-full text-gray-300 bg-gray-700 p-2 rounded-lg" aria-label="Upload audio file" />
                 <button id="recordButton" class="bg-blue-600 text-white px-4 py-2 rounded-lg w-full">Start Recording</button>
                 <button id="stopButton" class="bg-red-600 text-white px-4 py-2 rounded-lg w-full hidden">Stop Recording</button>
-                <audio id="audioPreview" controls class="w-full hidden"></audio>
+                <audio id="audioPreview" controls class="w-full hidden" aria-label="Audio preview"></audio>
             </div>
         </div>
 
         <!-- Engagement Levels Visualization -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1">
-            <h2 class="text-xl text-white font-semibold">Engagement Levels</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1" aria-labelledby="engagementLevelsTitle">
+            <h2 id="engagementLevelsTitle" class="text-xl text-white font-semibold">Engagement Levels</h2>
             <canvas id="engagementLevelsChart" class="w-full mt-4"></canvas>
         </div>
 
         <!-- Overall Engagement Visualization -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1">
-            <h2 class="text-xl text-white font-semibold">Overall Engagement</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1" aria-labelledby="overallEngagementTitle">
+            <h2 id="overallEngagementTitle" class="text-xl text-white font-semibold">Overall Engagement</h2>
             <canvas id="overallEngagementChart" class="w-full mt-4"></canvas>
             <p id="overallEngagementScore" class="text-3xl font-bold text-blue-400 mt-4 text-center">0</p>
         </div>
 
         <!-- Engagement Trends Visualization -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1 md:col-span-2">
-            <h2 class="text-xl text-white font-semibold">Engagement Trends</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1 md:col-span-2" aria-labelledby="engagementTrendsTitle">
+            <h2 id="engagementTrendsTitle" class="text-xl text-white font-semibold">Engagement Trends</h2>
             <canvas id="engagementTrendsChart" class="w-full mt-4"></canvas>
         </div>
 
         <!-- Recommendations -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1">
-            <h2 class="text-xl text-white font-semibold">Recommendations</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg col-span-1" aria-labelledby="recommendationsTitle">
+            <h2 id="recommendationsTitle" class="text-xl text-white font-semibold">Recommendations</h2>
             <ul id="recommendationsContainer" class="mt-4 text-gray-300">
                 <li>Loading recommendations...</li>
             </ul>
         </div>
     </main>
 
-    <footer class="text-center mt-10">
+    <footer class="text-center mt-10" role="contentinfo">
         <p class="text-gray-500 text-sm">&copy; 2024 EngageSense. All Rights Reserved.</p>
     </footer>
 
     <script>
         // Chart.js Setup
-        const engagementLevelsCtx = document.getElementById('engagementLevelsChart').getContext('2d');
-        const overallEngagementCtx = document.getElementById('overallEngagementChart').getContext('2d');
-        const engagementTrendsCtx = document.getElementById('engagementTrendsChart').getContext('2d');
+        document.addEventListener('DOMContentLoaded', () => {
+            const engagementLevelsCtx = document.getElementById('engagementLevelsChart').getContext('2d');
+            const overallEngagementCtx = document.getElementById('overallEngagementChart').getContext('2d');
+            const engagementTrendsCtx = document.getElementById('engagementTrendsChart').getContext('2d');
 
-        const engagementLevelsChart = new Chart(engagementLevelsCtx, {
-            type: 'radar',
-            data: {
-                labels: ['Physical', 'Emotional', 'Mental', 'Spiritual'],
-                datasets: [{
-                    label: 'Engagement Levels',
-                    data: [7, 8, 6, 9], // Mock data
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                    borderColor: '#3b82f6',
-                    pointBackgroundColor: '#3b82f6'
-                }]
-            },
-            options: {
-                scales: {
-                    r: {
-                        ticks: {
-                            color: '#fff'
+            const engagementLevelsChart = new Chart(engagementLevelsCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Physical', 'Emotional', 'Mental', 'Spiritual'],
+                    datasets: [{
+                        label: 'Engagement Levels',
+                        data: [7, 8, 6, 9], // Mock data
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3b82f6',
+                        pointBackgroundColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            ticks: {
+                                color: '#fff'
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        const overallEngagementChart = new Chart(overallEngagementCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Engagement', 'Remaining'],
-                datasets: [{
-                    data: [75, 25], // Mock data
-                    backgroundColor: ['#3b82f6', '#2d3748']
-                }]
-            },
-            options: {
-                plugins: {
-                    tooltip: { enabled: true }
+            const overallEngagementChart = new Chart(overallEngagementCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Engagement', 'Remaining'],
+                    datasets: [{
+                        data: [75, 25], // Mock data
+                        backgroundColor: ['#3b82f6', '#2d3748']
+                    }]
                 },
-                cutout: '70%'
-            }
-        });
-
-        const engagementTrendsChart = new Chart(engagementTrendsCtx, {
-            type: 'line',
-            data: {
-                labels: ['0:00', '0:15', '0:30', '0:45', '1:00'], // Mock time intervals
-                datasets: [{
-                    label: 'Engagement Over Time',
-                    data: [50, 55, 53, 57, 60], // Mock data
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)'
-                }]
-            },
-            options: {
-                scales: {
-                    x: {
-                        ticks: { color: '#fff' }
+                options: {
+                    plugins: {
+                        tooltip: { enabled: true }
                     },
-                    y: {
-                        ticks: { color: '#fff' }
+                    cutout: '70%'
+                }
+            });
+
+            const engagementTrendsChart = new Chart(engagementTrendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['0:00', '0:15', '0:30', '0:45', '1:00'], // Mock time intervals
+                    datasets: [{
+                        label: 'Engagement Over Time',
+                        data: [50, 55, 53, 57, 60], // Mock data
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            ticks: { color: '#fff' }
+                        },
+                        y: {
+                            ticks: { color: '#fff' }
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // Recommendations
-        const recommendationsContainer = document.getElementById('recommendationsContainer');
-        const recommendations = [
-            'Improve storytelling to enhance emotional engagement.',
-            'Introduce interactive visuals for better mental focus.',
-            'Simplify content to avoid overload.'
-        ];
-        recommendationsContainer.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
+            // Recommendations
+            const recommendationsContainer = document.getElementById('recommendationsContainer');
+            const recommendations = [
+                'Improve storytelling to enhance emotional engagement.',
+                'Introduce interactive visuals for better mental focus.',
+                'Simplify content to avoid overload.'
+            ];
+            recommendationsContainer.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
 
-        // Audio Recording
-        let mediaRecorder;
-        const audioChunks = [];
-        const recordButton = document.getElementById('recordButton');
-        const stopButton = document.getElementById('stopButton');
-        const audioPreview = document.getElementById('audioPreview');
+            // Audio Recording
+            let mediaRecorder;
+            const audioChunks = [];
+            const recordButton = document.getElementById('recordButton');
+            const stopButton = document.getElementById('stopButton');
+            const audioPreview = document.getElementById('audioPreview');
 
-        recordButton.addEventListener('click', async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
+            recordButton.addEventListener('click', async () => {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
 
-            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
 
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                audioPreview.src = audioUrl;
-                audioPreview.classList.remove('hidden');
-                stopButton.classList.add('hidden');
-                recordButton.classList.remove('hidden');
-            };
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    audioPreview.src = audioUrl;
+                    audioPreview.classList.remove('hidden');
+                    stopButton.classList.add('hidden');
+                    recordButton.classList.remove('hidden');
+                };
 
-            mediaRecorder.start();
-            recordButton.classList.add('hidden');
-            stopButton.classList.remove('hidden');
-        });
+                mediaRecorder.start();
+                recordButton.classList.add('hidden');
+                stopButton.classList.remove('hidden');
+            });
 
-        stopButton.addEventListener('click', () => {
-            mediaRecorder.stop();
+            stopButton.addEventListener('click', () => {
+                mediaRecorder.stop();
+            });
         });
     </script>
 </body>
