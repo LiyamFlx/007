@@ -44,6 +44,7 @@
                 <button id="recordButton" class="bg-blue-600 text-white px-4 py-2 rounded-lg w-full">Start Recording</button>
                 <button id="stopButton" class="bg-red-600 text-white px-4 py-2 rounded-lg w-full hidden">Stop Recording</button>
                 <audio id="audioPreview" controls class="w-full hidden" aria-label="Audio preview"></audio>
+                <button onclick="analyzeAudio()" class="bg-green-600 text-white px-4 py-2 rounded-lg w-full">Analyze Audio</button>
             </div>
         </div>
 
@@ -189,6 +190,31 @@
                 mediaRecorder.stop();
             });
         });
+
+        // Analyze Audio Function
+        async function analyzeAudio() {
+            const audioUpload = document.getElementById('audioUpload');
+            if (audioUpload.files.length === 0) {
+                alert('Please upload an audio file first.');
+                return;
+            }
+
+            const audioFile = audioUpload.files[0];
+            const formData = new FormData();
+            formData.append('audio', audioFile);
+
+            try {
+                const response = await fetch('/analyze-audio', { // Replace with actual API endpoint
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                document.getElementById('overallEngagementScore').innerText = result.score;
+            } catch (error) {
+                console.error('Error analyzing audio:', error);
+                alert('Failed to analyze audio. Please try again.');
+            }
+        }
     </script>
 </body>
 </html>
